@@ -12,7 +12,7 @@ app = FastAPI()
 # Enable CORS for local dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://qr-code-creator-clean.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,8 +38,8 @@ async def create_checkout_session():
                     "quantity": 1,
                 },
             ],
-            success_url="http://localhost:3000/success",
-            cancel_url="http://localhost:3000/cancel",
+            success_url="https://qr-app.netlify.app/success",
+            cancel_url="https://qr-app.netlify.app/cancel",
         )
         return {"id": session.id}
     except Exception as e:
