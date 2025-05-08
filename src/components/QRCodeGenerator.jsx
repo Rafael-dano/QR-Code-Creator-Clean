@@ -54,14 +54,33 @@ const QRCodeGenerator = () => {
       });
   
       const data = await response.json();
-console.log("Stripe session response:", data);
-
-if (data.id) {
-  const stripe = await stripePromise;
-  stripe.redirectToCheckout({ sessionId: data.id });
-} else {
-  alert("Error creating Stripe Checkout session");
-}
+      console.log("Stripe session response:", data);
+  
+      if (!data.id && !data.url) {
+        console.error("Unexpected Stripe session response:", data);
+        alert("No session ID or URL returned from backend.");
+        return;
+      }
+  
+      const stripe = await stripePromise;
+      if (!stripe) {
+        alert("Stripe failed to load.");
+        return;
+      }
+  
+      // Prefer redirectToCheckout if session ID is returned
+      if (data.id) {
+        const result = await stripe.redirectToCheckout({ sessionId: data.id });
+        if (result.error) {
+          console.error("Stripe redirect error:", result.error.message);
+          alert("Stripe Checkout failed: " + result.error.message);
+        }
+      } 
+      // Fallback: Redirect manually using a URL (if that's what your backend returns)
+      else if (data.url) {
+        window.location.href = data.url;
+      }
+  
     } catch (error) {
       console.error("Stripe Checkout Error:", error);
       alert("Something went wrong. Please try again.");
