@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import stripe
+from stripe import stripe
 import os
 from dotenv import load_dotenv
 
@@ -13,9 +13,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "https://freeqrcodecreator.netlify.app",
-    ],
+        "https://freeqrcodecreator.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
