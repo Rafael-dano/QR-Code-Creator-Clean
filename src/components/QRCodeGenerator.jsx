@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { loadStripe } from '@stripe/stripe-js';
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+const stripePromise = loadStripe("pk_test_51RK8rfPSWSmTCXJwy8jPCfUBBXWATy7Mmf113GyqPWpqEJfQf4gFfLSzbIkI6OgeBBQTGDYTKyQBYGYuu3pMyIkt00AS2nmshQ");
 
 const QRCodeGenerator = () => {
   const [text, setText] = useState('');
@@ -45,44 +45,33 @@ const QRCodeGenerator = () => {
 
   const handlePurchase = async () => {
     try {
-      const response = await fetch("https://qr-code-creator-clean.onrender.com/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}) 
-      });
+      const response = await fetch(
+        "https://qr-code-creator-clean.onrender.com/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
   
-      const data = await response.json();
-      console.log("Stripe session response:", data);
-  
-      if (!data.id && !data.url) {
-        console.error("Unexpected Stripe session response:", data);
-        alert("No session ID or URL returned from backend.");
-        return;
-      }
+      const session = await response.json();
+      console.log("Stripe session response: ", session);
   
       const stripe = await stripePromise;
-      if (!stripe) {
-        alert("Stripe failed to load.");
-        return;
+  
+      if (!stripe || !session.id) {
+        throw new Error("Stripe not loaded or session ID missing");
       }
   
-      // Prefer redirectToCheckout if session ID is returned
-      if (data.id) {
-        const result = await stripe.redirectToCheckout({ sessionId: data.id });
-        if (result.error) {
-          console.error("Stripe redirect error:", result.error.message);
-          alert("Stripe Checkout failed: " + result.error.message);
-        }
-      } 
-      // Fallback: Redirect manually using a URL (if that's what your backend returns)
-      else if (data.url) {
-        window.location.href = data.url;
-      }
+      const result = await stripe.redirectToCheckout({ sessionId: session.id });
   
+      if (result.error) {
+        console.error("Stripe Checkout Error: ", result.error.message);
+        alert("Stripe Checkout Error: " + result.error.message);
+      }
     } catch (error) {
-      console.error("Stripe Checkout Error:", error);
+      console.error("Purchase Error: ", error.message);
       alert("Something went wrong. Please try again.");
     }
   };  
