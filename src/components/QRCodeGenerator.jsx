@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { loadStripe } from '@stripe/stripe-js';
-const stripePromise = loadStripe('pk_test_51RK8rfPSWSmTCXJwy8jPCfUBBXWATy7Mmf113GyqPWpqEJfQf4gFfLSzbIkI6OgeBBQTGDYTKyQBYGYuu3pMyIkt00AS2nmshQ');
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const QRCodeGenerator = () => {
   const [text, setText] = useState('');

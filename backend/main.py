@@ -9,15 +9,19 @@ load_dotenv()
 
 app = FastAPI()
 
-# Enable CORS for local dev
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://qr-code-creator-clean.onrender.com"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://qr-app.netlify.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Set Stripe secret key
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 @app.post("/create-checkout-session")
@@ -30,18 +34,16 @@ async def create_checkout_session():
                 {
                     "price_data": {
                         "currency": "usd",
-                        "product_data": {
-                            "name": "Premium QR Code",
-                        },
+                        "product_data": {"name": "Premium QR Code"},
                         "unit_amount": 499,  # $4.99
                     },
                     "quantity": 1,
                 },
             ],
-            success_url="https://qr-app.netlify.app/success",
-            cancel_url="https://qr-app.netlify.app/cancel",
+            success_url=os.getenv("STRIPE_SUCCESS_URL"),
+            cancel_url=os.getenv("STRIPE_CANCEL_URL"),
         )
         return {"id": session.id}
     except Exception as e:
         print("Stripe error:", e)
-        return {"error": str(e)}
+        return JSONResponse(status_code=500, content={"error": str(e)})

@@ -24,3 +24,16 @@ yarn-error.log*
 # Others
 .pnp
 .pnp.js
+
+
+# Backend
+.env
+__pycache__/
+*.pyc
+
+# Frontend
+node_modules/
+build/
+.env
+
+
