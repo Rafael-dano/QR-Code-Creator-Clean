@@ -14,7 +14,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://freeqrcodecreator.netlify.app/"
+        "https://freeqrcodecreator.netlify.app/",
         "https://qr-code-creator-clean.onrender.com"
     ],
     allow_credentials=True,
