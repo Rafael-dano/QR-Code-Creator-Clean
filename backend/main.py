@@ -29,11 +29,8 @@ def root():
     return {"message": "API is running"}
 
 @app.post("/create-checkout-session")
-async def create_checkout_session(request: Request):
+async def create_checkout_session():
     try:
-        data = await request.json()
-        print("Incoming data:", data)  # Debugging purposes
-
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             mode="payment",
@@ -42,13 +39,13 @@ async def create_checkout_session(request: Request):
                     "price_data": {
                         "currency": "usd",
                         "product_data": {"name": "Premium QR Code"},
-                        "unit_amount": 499,
+                        "unit_amount": 499,  # $4.99
                     },
                     "quantity": 1,
                 },
             ],
-            success_url=os.getenv("STRIPE_SUCCESS_URL"),
-            cancel_url=os.getenv("STRIPE_CANCEL_URL"),
+            success_url=os.getenv("STRIPE_SUCCESS_URL", "https://freeqrcodecreator.netlify.app/success"),
+            cancel_url=os.getenv("STRIPE_CANCEL_URL", "https://freeqrcodecreator.netlify.app/cancel"),
         )
         return {"id": session.id}
     except Exception as e:
