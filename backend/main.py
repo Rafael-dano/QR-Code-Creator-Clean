@@ -14,7 +14,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://qr-app.netlify.app"
+        "https://freeqrcodecreator.netlify.app/"
+        "https://qr-code-creator-clean.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -45,5 +46,5 @@ async def create_checkout_session():
         )
         return {"id": session.id}
     except Exception as e:
-        print("Stripe error:", e)
+        print("Stripe error:", str(e))
         return JSONResponse(status_code=500, content={"error": str(e)})
